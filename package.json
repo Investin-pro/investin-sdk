@@ -1,0 +1,29 @@
+{
+  "name": "investin-sdk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Investin-pro/investin-sdk.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Investin-pro/investin-sdk/issues"
+  },
+  "homepage": "https://github.com/Investin-pro/investin-sdk#readme",
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.31.0",
+    "bn.js": "^5.2.0",
+    "buffer-layout": "^1.2.2"
+  }
+}
