@@ -29,7 +29,7 @@ refer to [types.ts](./src/types.ts#L21) for price types
 ```
 const investor = new Investor(connection, investorAddress);
 
-const investments = await investor.getgetInvestments();
+const investments = await investor.getInvestments();
 ```
 *Investments do not contain the current roi of a deposit, which is based on the current performance of a fund, you will need to get the fund data for that and calculate it that way*
 #
