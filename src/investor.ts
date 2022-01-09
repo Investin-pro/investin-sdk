@@ -1,6 +1,6 @@
 import { Connection, PublicKey } from "@solana/web3.js";
+import { INVESTOR_DATA } from ".";
 import { programId } from "./constants";
-import { INVESTOR_DATA } from "./layouts/investor";
 import { INVESTMENT } from "./types";
 
 export class Investor {

@@ -18,4 +18,26 @@ export interface INVESTMENT {
     pubKey: string
 }
 
+export interface COINGECKO_PRICE {
+    id: string;
+    image: string;
+    name: string;
+    price: number;
+    strokeColor: { from: string, to: string }
+    symbol: string
+}
 
+export interface FUND {
+    fundPDA: string;
+    fundManager: string;
+    fundStateAccount: string;
+    fundName: string;
+    numberOfActiveInvestments: number;
+    totalAmount: number;
+    currentPerformance: number;
+    currentAum: number;
+    performanceFeePercentage: number;
+    minAmount: number;
+    minReturn: number;
+    marginAccounts: string;
+}

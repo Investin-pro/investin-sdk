@@ -1,3 +1,3 @@
-export * from './investor';
-export * from './layouts'
-export * from './types'
+export * from './layouts/layouts';
+export * from './types';
+export * from './investinClient';
