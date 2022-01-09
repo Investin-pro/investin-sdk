@@ -3,7 +3,7 @@
 ```
 npm i investin-sdk / yarn add investin-sdk
 ```
-#
+
 ## Using the SDK
 
 ### To fetch all the funds
@@ -14,7 +14,7 @@ await investinClient.loadTokensAndPools();
 
 const funds = await investinClient.fetchAllFunds();
 ```
-#
+
 ## Token Pricing
 Currently the SDK uses coingecko for token prices, if you have a alternative source you can pass them in like so 
 ```
@@ -24,7 +24,7 @@ const funds = await investinClient.fetchAllFunds(prices);
 ```
 refer to [types.ts](./src/types.ts#L21) for price types
 
-#
+
 ## Fetch investor deposits
 ```
 const investor = new Investor(connection, investorAddress);
