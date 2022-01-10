@@ -1,7 +1,8 @@
 # Investin SDK
+Client SDK for interacting with INVESTIN's smart-contracts
 ### Install
 ```
-npm i investin-sdk / yarn add investin-sdk
+npm i @investin/client-sdk / yarn add @investin/client-sdk 
 ```
 
 ## Using the SDK
