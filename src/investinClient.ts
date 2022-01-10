@@ -42,14 +42,14 @@ export class InvestinClient {
   }
 
   private async loadTokens() {
-    const res = await axios.get('https://github.com/raashidjunaid1/public-testing/blob/main/tokens.json?raw=true')
+    const res = await axios.get('https://raw.githubusercontent.com/raashidjunaid1/public-testing/main/tokens.json')
     if (res.status === 200) {
       TOKENS = res.data;
     }
   }
 
   private async loadOrcaPools() {
-    const res = await axios.get('https://raw.githubusercontent.com/raashidjunaid1/public-testing/main/orca_pools.js')
+    const res = await axios.get('http://raw.githubusercontent.com/raashidjunaid1/public-testing/main/orca_pools.js')
     if (res.status === 200) {
       this.orca_pools = eval('(' + res.data + ')');
     }
