@@ -1,10 +1,11 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import axios from "axios";
-import { COINGECKO_PRICE, FUND, FUND_DATA, PLATFORM_DATA } from ".";
+import { COINGECKO_PRICE, FUND, FUND_DATA, INVESTMENT_MODEL, PLATFORM_DATA } from ".";
 import { MANGO_GROUP_ACCOUNT_V3, MANGO_PROGRAM_ID_V3, platformStateAccount, programId } from "./constants";
 import { displayAddress, mapTokens } from "./utils/helpers";
 import { MangoClient } from '@blockworks-foundation/mango-client'
 import { TokenAmount } from "./utils/TokenAmount";
+import { Investor } from "./investor";
 
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
@@ -28,6 +29,7 @@ export class InvestinClient {
   orca_pools: any;
   raydium_pools: any;
   mangoClient: MangoClient;
+  funds: FUND[] = [];
 
   constructor(connection: Connection) {
     this.connection = connection;
@@ -186,6 +188,44 @@ export class InvestinClient {
       if (returnedFundDataPromise) promises.push(returnedFundDataPromise);
     }
     let funds = (await Promise.allSettled(promises)).filter(p => p.status === 'fulfilled' && p.value !== undefined).map(f => (f as any).value);
+    this.funds = funds;
     return funds;
+  }
+
+  async getInvestmentsByInvestorAddress(investorAddress: PublicKey) {
+    if(this.funds.length === 0) {
+      await this.fetchAllFunds();
+    }
+
+    const investor = new Investor(this.connection, investorAddress);
+    const investments = await investor.getInvestments();
+
+    let investmentsWithPerformances: INVESTMENT_MODEL[] = [];
+    for (const invStateData of investments) {
+      const amount = (new TokenAmount(invStateData.amount.toString(), 6)).toEther().toString()
+      const amountInRouter = (new TokenAmount(invStateData.amount_in_router.toString(), 6)).toEther().toString()
+      const fund = this.funds.find(m => m.fundManager == invStateData.manager.toBase58());
+      let currentPerformance = 1
+      if (fund?.fundPDA) {
+        currentPerformance = 1 + (fund?.currentPerformance / 100)
+      }
+      
+      investmentsWithPerformances.push({
+        investorStateData : invStateData,
+        invStateDataPubKey: invStateData.pubKey,
+        hasWithdrawn: invStateData.has_withdrawn,
+        fundPDA: fund!.fundPDA,
+        fundManager: invStateData.manager.toBase58(),
+        fundStateAccount: fund!.fundStateAccount,
+        fundAddress: fund!.fundPDA,
+        fundName: fund!.fundName,
+        amount,
+        amountInRouter,
+        currentPerformance : currentPerformance,
+        currentReturns: invStateData.start_performance == 0 ? amount : ((currentPerformance / (invStateData.start_performance)) * amount).toFixed(2),
+        status: amountInRouter==='0' ? 'Active' : 'inActive',
+      });
+    }
+    return investmentsWithPerformances;
   }
 }

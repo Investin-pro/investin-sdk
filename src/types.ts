@@ -41,3 +41,19 @@ export interface FUND {
     minReturn: number;
     marginAccounts: string;
 }
+
+export interface INVESTMENT_MODEL {
+    investorStateData: INVESTMENT;
+    invStateDataPubKey: string;
+    hasWithdrawn: number;
+    fundPDA: string;
+    fundManager: string;
+    fundStateAccount: string;
+    fundAddress: string;
+    fundName: string;
+    amount: Number;
+    amountInRouter: Number;
+    currentPerformance: Number;
+    currentReturns: Number;
+    status: 'Active' | 'inActive';
+}

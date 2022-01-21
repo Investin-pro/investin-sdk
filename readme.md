@@ -29,9 +29,12 @@ refer to [types.ts](./src/types.ts#L21) for price types
 
 ## Fetch investor deposits
 ```
-const investor = new Investor(connection, investorAddress);
+const investinClient = new InvestinClient(connection);
 
-const investments = await investor.getInvestments();
+await investinClient.loadTokensAndPools();
+await investinClient.fetchAllFunds();
+const investments = await investinClient.getInvestmentsByInvestorAddress();
+
 ```
 *Investments do not contain the current roi of a deposit, which is based on the current performance of a fund, you will need to get the fund data for that and calculate it that way*
 #
