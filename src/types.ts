@@ -51,9 +51,40 @@ export interface INVESTMENT_MODEL {
     fundStateAccount: string;
     fundAddress: string;
     fundName: string;
-    amount: Number;
-    amountInRouter: Number;
+    amount: number;
+    amountInRouter: number;
     currentPerformance: Number;
-    currentReturns: Number;
+    currentReturns: number;
     status: 'Active' | 'inActive';
+}
+
+// {
+//     "id": "aurory",
+//     "symbol": "aury",
+//     "name": "Aurory",
+//     "image": "https://assets.coingecko.com/coins/images/19324/thumb/logo.png?1635076945",
+//     "strokeColor": {
+//       "from": "#15e0c3",
+//       "to": "#15e0c3"
+//     }
+//   },
+
+// {
+//     "id": "bitcoin",
+//     "symbol": "btc",
+//     "name": "Bitcoin",
+//     "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+//     "strokeColor": "#f69419"
+//   },
+
+export interface COINGECKO_TOKEN {
+    id: string;
+    symbol: string;
+    name: string;
+    image: string;
+    price?: number;
+    strokeColor: string | {
+        from: string;
+        to: string;
+    };
 }

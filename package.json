@@ -29,6 +29,7 @@
     "bignumber.js": "^9.0.2",
     "bn.js": "^5.2.0",
     "buffer-layout": "^1.2.2",
-    "coingecko-api": "^1.0.10"
+    "coingecko-api": "^1.0.10",
+    "lodash": "^4.17.21"
   }
 }
