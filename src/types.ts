@@ -51,9 +51,21 @@ export interface INVESTMENT_MODEL {
     fundStateAccount: string;
     fundAddress: string;
     fundName: string;
-    amount: Number;
-    amountInRouter: Number;
+    amount: number;
+    amountInRouter: number;
     currentPerformance: Number;
-    currentReturns: Number;
+    currentReturns: number;
     status: 'Active' | 'inActive';
+}
+
+export interface COINGECKO_TOKEN {
+    id: string;
+    symbol: string;
+    name: string;
+    image: string;
+    price?: number;
+    strokeColor: string | {
+        from: string;
+        to: string;
+    };
 }

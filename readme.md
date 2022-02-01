@@ -12,8 +12,6 @@ npm i @investin/client-sdk / yarn add @investin/client-sdk
 ```
 const investinClient = new InvestinClient(connection);
 
-await investinClient.loadTokensAndPools();
-
 const funds = await investinClient.fetchAllFunds();
 ```
 
@@ -31,7 +29,6 @@ refer to [types.ts](./src/types.ts#L21) for price types
 ```
 const investinClient = new InvestinClient(connection);
 
-await investinClient.loadTokensAndPools();
 await investinClient.fetchAllFunds();
 const investments = await investinClient.getInvestmentsByInvestorAddress();
 

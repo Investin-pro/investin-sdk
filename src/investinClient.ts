@@ -1,33 +1,20 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import axios from "axios";
-import { COINGECKO_PRICE, FUND, FUND_DATA, INVESTMENT_MODEL, PLATFORM_DATA } from ".";
-import { MANGO_GROUP_ACCOUNT_V3, MANGO_PROGRAM_ID_V3, platformStateAccount, programId } from "./constants";
+import { COINGECKO_TOKEN, FUND, FUND_DATA, INVESTMENT_MODEL, PLATFORM_DATA } from ".";
+import { MANGO_GROUP_ACCOUNT_V3, MANGO_PROGRAM_ID_V3, platformStateAccount, programId, SERUM_PROGRAM_ID_V3 } from "./constants";
 import { displayAddress, mapTokens } from "./utils/helpers";
 import { MangoClient } from '@blockworks-foundation/mango-client'
 import { TokenAmount } from "./utils/TokenAmount";
 import { Investor } from "./investor";
+import { COINGECKO_TOKENS } from "./coingeckoTokens";
+import { raydiumPools } from "./pools/raydiumPools";
+import { orcaPools } from "./pools/orcaPools";
+import { TOKENS } from "./tokens";
 
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
-let TOKENS = [];
-// the following are needed as we are doing eval for getting tokens from github
-const ORCA_SWAP_PROGRAM_ID = new PublicKey('9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP')
-const LIQUIDITY_POOL_PROGRAM_ID_V4 = new PublicKey('675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8')
-const SERUM_PROGRAM_ID_V3 = new PublicKey('9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin')
-
-const NATIVE_SOL = {
-  symbol: 'SOL',
-  name: 'Native Solana',
-  mintAddress: '11111111111111111111111111111111',
-  decimals: 9
-}
-
 export class InvestinClient {
   connection: Connection;
-  coingeckoTokens: any;
-  orca_pools: any;
-  raydium_pools: any;
   mangoClient: MangoClient;
   funds: FUND[] = [];
 
@@ -36,48 +23,13 @@ export class InvestinClient {
     this.mangoClient = new MangoClient(connection, MANGO_PROGRAM_ID_V3)
   }
 
-  private async loadCoingeckoTokens() {
-    const res = await axios.get('https://raw.githubusercontent.com/raashidjunaid1/public-testing/main/investinCoingeckoTokens.json')
-    if (res.status === 200) {
-      this.coingeckoTokens = res.data
-    }
-  }
-
-  private async loadTokens() {
-    const res = await axios.get('https://raw.githubusercontent.com/raashidjunaid1/public-testing/main/tokens.json')
-    if (res.status === 200) {
-      TOKENS = res.data;
-    }
-  }
-
-  private async loadOrcaPools() {
-    const res = await axios.get('http://raw.githubusercontent.com/raashidjunaid1/public-testing/main/orca_pools.js')
-    if (res.status === 200) {
-      this.orca_pools = eval('(' + res.data + ')');
-    }
-  }
-
-  private async loadRaydiumPools() {
-    const res = await axios.get('https://raw.githubusercontent.com/raashidjunaid1/public-testing/main/raydium_pools.js')
-    if (res.status === 200) {
-      this.raydium_pools = eval('(' + res.data + ')');
-    }
-  }
-
-  async loadTokensAndPools() {
-    await this.loadTokens()
-    await this.loadCoingeckoTokens();
-    await this.loadOrcaPools()
-    await this.loadRaydiumPools()
-  }
-
   private async getPerformance(tokens, prices, prevPerformance, prevTotalAmount, marginBalance) {
     let currentAum = marginBalance;
     for (const token of tokens) {
       if (token.mint == undefined) {
         continue;
       }
-      const coinSymbol = [...this.raydium_pools, ...this.orca_pools].find(p => p.coin.mintAddress == token.mint.toBase58());
+      const coinSymbol = [...raydiumPools, ...orcaPools].find(p => p.coin.mintAddress == token.mint.toBase58());
 
       if (coinSymbol) {
         const tokenBalance = new TokenAmount(token.balance, coinSymbol.coin.decimals)
@@ -118,7 +70,7 @@ export class InvestinClient {
     return marginData
   }
 
-  private async getFundData(data, platformData, prices: COINGECKO_PRICE[]): Promise<FUND | undefined> {
+  private async getFundData(data, platformData, prices: COINGECKO_TOKEN[]): Promise<FUND | undefined> {
     const decodedData = FUND_DATA.decode(data.account.data);
     if (decodedData.is_initialized) {
       const { updatedPerformance, currentAum } =
@@ -149,25 +101,27 @@ export class InvestinClient {
     }
   }
 
-  async fetchAllTokenPrices(): Promise<COINGECKO_PRICE[]> {
-    const RaydiumCoins = this.raydium_pools.map(p => p.coin.symbol == "xCOPE" ? "COPE" : p.coin.symbol);
-    const OrcaCoins = this.orca_pools.map(p => p.coin.symbol);
-    const coins = [...RaydiumCoins, ...OrcaCoins];
-    // const coins = pools.map(p => p.coin.symbol == "xCOPE" ? "COPE" : p.coin.symbol);
-    const coingeckoTokens = this.coingeckoTokens.filter((token) => coins.includes(token.symbol.toUpperCase()))
+  // redunant
+  async loadTokensAndPools() {}
+
+  async fetchAllTokenPrices(): Promise<COINGECKO_TOKEN[]> {
+    const raydiumCoins = raydiumPools.map(p => p.coin.symbol == "xCOPE" ? "COPE" : p.coin.symbol);
+    const orcaCoins = orcaPools.map(p => p.coin.symbol);
+    const coins = [...raydiumCoins, ...orcaCoins];
+    const coingeckoTokens = COINGECKO_TOKENS.filter((token) => coins.includes(token.symbol.toUpperCase()))
     const coingekoIds = coingeckoTokens.map((t) => t.id);
     try {
       const fetchPrices = (await CoinGeckoClient.simple.price({ ids: coingekoIds, vs_currencies: "usd" })).data
-      coingeckoTokens.map((c) => c['price'] = fetchPrices[c.id]?.usd)
+      coingeckoTokens.map((c) => c.price = fetchPrices[c.id]?.usd)
       return coingeckoTokens;
     } catch (error) {
       console.error("coingecko error - giving prices 0  ::", error);
-      coingeckoTokens.map((c) => c['price'] = `${0}`)
+      coingeckoTokens.map((c) => c.price = 0)
       return coingeckoTokens;
     }
   }
 
-  async fetchAllFunds(prices?: COINGECKO_PRICE[]): Promise<FUND[]> {
+  async fetchAllFunds(prices?: COINGECKO_TOKEN[]): Promise<FUND[]> {
     if (!prices) {
       prices = await this.fetchAllTokenPrices()
     }
