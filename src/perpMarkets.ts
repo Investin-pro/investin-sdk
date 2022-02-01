@@ -1,18 +1,4 @@
 export const PERP_MARKETS = [
-    // {
-    //     "name": "MNGO-PERP",
-    //     "publicKey": "4nfmQP3KmUqEJ6qJLsS3offKgE96YUB4Rp7UQvm2Fbi9",
-    //     "baseSymbol": "MNGO",
-    //     "baseDecimals": 6,
-    //     "quoteDecimals": 6,
-    //     "marketIndex": 0,
-    //     "bidsKey": "4XU8wH9ivp7x7ohhTbWUZabg5WVkF7sBtqQCmFEV6qiN",
-    //     "asksKey": "4ZkS7ZZkxfsC3GtvvsHP3DFcUeByU9zzZELS4r8HCELo",
-    //     "eventsKey": "7orixrhZpjvofZGWZyyLFxSEt2tfFiost5kHEzd7jdet",
-    //     "contractSize" : 1,
-    //     "perpMarketId" : 0,
-    //     "leverage" : 4
-    // },
     {
         "name": "BTC-PERP",
         "publicKey": "DtEcjPLyD4YtTBB4q8xwFZ9q49W89xZCZtJyrGebi5t8",
@@ -23,9 +9,9 @@ export const PERP_MARKETS = [
         "bidsKey": "Bc8XaK5UTuDSCBtiESSUxBSb9t6xczhbAJnesPamMRir",
         "asksKey": "BkWRiarqxP5Gwx7115LQPbjRmr3NjuSRXWBnduXXLGWR",
         "eventsKey": "7t5Me8RieYKsFpfLEV8jnpqcqswNpyWD95ZqgUXuLV8Z",
-        "contractSize" : 0.0001,
-        "perpMarketId" : 1,
-        "leverage" : 20
+        "contractSize": 0.0001,
+        "perpMarketId": 1,
+        "leverage": 20
     },
     {
         "name": "ETH-PERP",
@@ -38,8 +24,8 @@ export const PERP_MARKETS = [
         "asksKey": "8NhLMV6huneGAqijuUgUFSshbAfXxdNj6ZMHSLb9aW8K",
         "eventsKey": "9vDfKNPJkCvQv9bzR4JNTGciQC2RVHPVNMMHiVDgT1mw",
         "contractSize": 0.001,
-        "perpMarketId" : 2,
-        "leverage" : 10
+        "perpMarketId": 2,
+        "leverage": 10
     },
     {
         "name": "SOL-PERP",
@@ -52,8 +38,8 @@ export const PERP_MARKETS = [
         "asksKey": "9qUxMSWBGAeNmXusQHuLfgSuYJqADyYoNLwZ63JJSi6V",
         "eventsKey": "31cKs646dt1YkA3zPyxZ7rUAkxTBz279w4XEobFXcAKP",
         "contractSize": 0.01,
-        "perpMarketId" : 3,
-        "leverage" : 10
+        "perpMarketId": 3,
+        "leverage": 10
     },
     {
         "name": "AVAX-PERP",
@@ -66,77 +52,21 @@ export const PERP_MARKETS = [
         "asksKey": "8Q11iGHXFTr267J4bgbeEeWPYPSANVcs6NQWHQK4UrNs",
         "eventsKey": "5Grgo9kLu692SUcJ6S7jtbi1WkdwiyRWgThAfN1PcvbL",
         "contractSize": 0.01,
-        "perpMarketId" : 12,
-        "leverage" : 10
+        "perpMarketId": 12,
+        "leverage": 10
     },
     {
-      "name": "LUNA-PERP",
-      "publicKey": "BCJrpvsB2BJtqiDgKVC4N6gyX1y24Jz96C6wMraYmXss",
-      "baseSymbol": "LUNA",
-      "baseDecimals": 6,
-      "quoteDecimals": 6,
-      "marketIndex": 13,
-      "bidsKey": "AiBurBkETJHHujZxNHm6UPvBQ1LLLkNkckPoZLeuLnS1",
-      "asksKey": "7Vcbxj2M8fqaNGfRDsau47uXumfCBhCTA97D6PNDPWfe",
-      "eventsKey": "HDJ43o9Dxxu6yWRWPEce44gtCHauRGLXJwwtvD7GwEBx",
-      "contractSize": 0.01,
-      "perpMarketId" : 13,
-      "leverage" : 10
-  },
-    // {
-    //     "name": "SRM-PERP",
-    //     "publicKey": "4GkJj2znAr2pE2PBbak66E12zjCs2jkmeafiJwDVM9Au",
-    //     "baseSymbol": "SRM",
-    //     "baseDecimals": 6,
-    //     "quoteDecimals": 6,
-    //     "marketIndex": 5,
-    //     "bidsKey": "E8Dv9giJQgPqNaBxF9WKDUhJD7GZ5fwXfF1NQfeCCaQp",
-    //     "asksKey": "GMv773oHiNd4jaj8uQvr1kbzroY5BDK7QTNHD14ATjGJ",
-    //     "eventsKey": "BXSPmdHWP6fMqsCsT6kG8UN9uugAJxdDkQWy87njUQnL",
-    //     "contractSize": 0.1,
-    //     "perpMarketId" : 5,
-    //     "leverage" : 10
-    // },
-    // {
-    //     "name": "RAY-PERP",
-    //     "publicKey": "6WGoQr5mJAEpYCdX6qjju2vEnJuD7e8ZeYes7X7Shi7E",
-    //     "baseSymbol": "RAY",
-    //     "baseDecimals": 6,
-    //     "quoteDecimals": 6,
-    //     "marketIndex": 6,
-    //     "bidsKey": "9AHm1nsxG1e3zkHnFLzYUXd17qnCgM7aFJDDApXXrhVU",
-    //     "asksKey": "43dVtcFTgDHHr32V6vhvxU2gg11wK7oyK8DdfTQ2pQsy",
-    //     "eventsKey": "Css2MQhEvXMTKjp9REVZR9ZyUAYAZAPrnDvRoPxrQkeN",
-    //     "contractSize": 0.1,
-    //     "perpMarketId" : 6,
-    //     "leverage" : 10
-    // },
-    // {
-    //     "name": "FTT-PERP",
-    //     "publicKey": "AhgEayEGNw46ALHuC5ASsKyfsJzAm5JY8DWqpGMQhcGC",
-    //     "baseSymbol": "FTT",
-    //     "baseDecimals": 6,
-    //     "quoteDecimals": 6,
-    //     "marketIndex": 8,
-    //     "bidsKey": "5xihpD8yz9vt95WSHVpW8pVykffW7h5VHb2LkhGBMUck",
-    //     "asksKey": "G9HtAEwHRYBrz9ZpdDJH8Qs1hEZqNJ1BPm3veBsmEXbX",
-    //     "eventsKey": "5pHAhyEphQRVvLqvYF7dziofR52yZWuq8DThQFJvJ7r5",
-    //     "contractSize": 0.1,
-    //     "perpMarketId" : 8,
-    //     "leverage" : 10
-    // },
-    // {
-    //     "name": "ADA-PERP",
-    //     "publicKey": "Bh9UENAncoTEwE7NDim8CdeM1GPvw6xAT4Sih2rKVmWB",
-    //     "baseSymbol": "ADA",
-    //     "baseDecimals": 6,
-    //     "quoteDecimals": 6,
-    //     "marketIndex": 9,
-    //     "bidsKey": "ivYhvYgribqdCzDg4m8fUF9ejgJHE4mnRUseR4d9khN",
-    //     "asksKey": "F4UTmEXxEUgGSL7P3HePAuz3PsXvx6hWr256vqVnzxKE",
-    //     "eventsKey": "G6Dsw9KnP4G38hePtedTH6gDfDQmPJGJw8zipBJvKc12",
-    //     "contractSize": 1,
-    //     "perpMarketId" : 9,
-    //     "leverage" : 10
-    // }
-  ]
+        "name": "LUNA-PERP",
+        "publicKey": "BCJrpvsB2BJtqiDgKVC4N6gyX1y24Jz96C6wMraYmXss",
+        "baseSymbol": "LUNA",
+        "baseDecimals": 6,
+        "quoteDecimals": 6,
+        "marketIndex": 13,
+        "bidsKey": "AiBurBkETJHHujZxNHm6UPvBQ1LLLkNkckPoZLeuLnS1",
+        "asksKey": "7Vcbxj2M8fqaNGfRDsau47uXumfCBhCTA97D6PNDPWfe",
+        "eventsKey": "HDJ43o9Dxxu6yWRWPEce44gtCHauRGLXJwwtvD7GwEBx",
+        "contractSize": 0.01,
+        "perpMarketId": 13,
+        "leverage": 10
+    },
+]
