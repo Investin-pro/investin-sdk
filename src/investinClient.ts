@@ -101,6 +101,9 @@ export class InvestinClient {
     }
   }
 
+  // redunant
+  async loadTokensAndPools() {}
+
   async fetchAllTokenPrices(): Promise<COINGECKO_TOKEN[]> {
     const raydiumCoins = raydiumPools.map(p => p.coin.symbol == "xCOPE" ? "COPE" : p.coin.symbol);
     const orcaCoins = orcaPools.map(p => p.coin.symbol);
