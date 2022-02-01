@@ -398,8 +398,8 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
         "name": "Invictus",
         "image": "https://assets.coingecko.com/coins/images/20097/small/jv2xoOxJ_400x400.jpg?1636494713",
         "strokeColor": {
-            "from": "#010201",
-            "to": "#e2af51"
+            "from": "#f7e868",
+            "to": "#272119"
         }
     },
     {
@@ -408,8 +408,8 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
         "name": "SonarWatch",
         "image": "https://assets.coingecko.com/coins/images/20494/small/S_7gaWIC_400x400.png?1637131427",
         "strokeColor": {
-            "from": "#010201",
-            "to": "#e2af51"
+            "from": "#9b4ad5",
+            "to": "#30cea5"
         }
     },
     {
@@ -418,8 +418,8 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
         "name": "Marinade staked SOL",
         "image": "https://assets.coingecko.com/coins/images/17752/small/PJ7Scn3.png?1629175951",
         "strokeColor": {
-            "from": "#fffaff",
-            "to": "#9d3ec7"
+            "from": "#c136e6",
+            "to": "#32dbaa"
         }
     },
     {
@@ -428,8 +428,8 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
         "name": "Marinade",
         "image": "https://assets.coingecko.com/coins/images/18867/small/MNDE200x200.png?1633944795",
         "strokeColor": {
-            "from": "#fffaff",
-            "to": "#9d3ec7"
+            "from": "#b63bc6",
+            "to": "#23dcae"
         }
     },
     {
@@ -438,8 +438,8 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
         "name": "DeFi Land",
         "image": "https://assets.coingecko.com/coins/images/18910/small/defilend.png",
         "strokeColor": {
-            "from": "#fffaff",
-            "to": "#9d3ec7"
+            "from": "#f9dd64",
+            "to": "#da662d"
         }
     },
     {
@@ -448,8 +448,8 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
         "name": "Sunny Aggregator",
         "image": "https://assets.coingecko.com/coins/images/18039/small/90dbe787-8e5f-473c-b923-fe138a7a30ea.png",
         "strokeColor": {
-            "from": "#fffaff",
-            "to": "#9d3ec7"
+            "from": "#f7c789",
+            "to": "#e95d1f"
         }
     },
     {
@@ -460,6 +460,16 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
         "strokeColor": {
             "from": "#75fac1",
             "to": "#42054a"
+        }
+    },
+    {
+        "id": "terra-luna",
+        "symbol": "luna",
+        "name": "luna",
+        "image": "https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png",
+        "strokeColor": {
+            "from": "#fcd763",
+            "to": "#1a284c"
         }
     },
     {
