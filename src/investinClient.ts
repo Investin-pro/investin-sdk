@@ -1,6 +1,5 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import axios from "axios";
-import { COINGECKO_PRICE, COINGECKO_TOKEN, FUND, FUND_DATA, INVESTMENT_MODEL, PLATFORM_DATA } from ".";
+import { COINGECKO_TOKEN, FUND, FUND_DATA, INVESTMENT_MODEL, PLATFORM_DATA } from ".";
 import { MANGO_GROUP_ACCOUNT_V3, MANGO_PROGRAM_ID_V3, platformStateAccount, programId, SERUM_PROGRAM_ID_V3 } from "./constants";
 import { displayAddress, mapTokens } from "./utils/helpers";
 import { MangoClient } from '@blockworks-foundation/mango-client'

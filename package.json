@@ -25,7 +25,6 @@
   "dependencies": {
     "@blockworks-foundation/mango-client": "^3.2.22",
     "@solana/web3.js": "^1.31.0",
-    "axios": "^0.24.0",
     "bignumber.js": "^9.0.2",
     "bn.js": "^5.2.0",
     "buffer-layout": "^1.2.2",
