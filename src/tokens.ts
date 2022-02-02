@@ -66,14 +66,6 @@ export const MANGO_TOKENS = {
         nodeKeys: ["2bqJYcA1A8gw4qJFjyE2G4akiUunpd9rP6QzfnxHqSqr"],
         mangoTokenIndex: 3
     },
-    // 'USDT': {
-    //     symbol: "USDT",
-    //     mintAddress: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-    //     decimals: 6,
-    //     rootKey: "4GYDmgvMpBx2n2iSmaS1xhZnwebR2gJ5V7UYUBA1PkJi",
-    //     nodeKeys: ["FYFJ4YHDEJnX7yVPoejUTAcKstnovTZpLq5zWAM7c6Uz"],
-    //     mangoTokenIndex : 4
-    // },
     'SRM': {
         symbol: "SRM",
         mintAddress: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt",
@@ -107,22 +99,6 @@ export const MANGO_TOKENS = {
         nodeKeys: ["8Q9JVDynPbyqXfnDXT31mncD7LAnoHAoSv2ywxZHjPFJ"],
         mangoTokenIndex: 8
     },
-    // 'MSOL': {
-    //     symbol: "MSOL",
-    //     mintAddress: "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
-    //     decimals: 9,
-    //     rootKey: "5AWnWCNKSzdpgyJSD3NWdarMazCGX2t8D4NU5xwSEVjC",
-    //     nodeKeys: ["H9jHd5YsHN4fg17aqng2WzJGTyinMDyQ2jin3iuiXPVD"],
-    //     mangoTokenIndex : 10
-    // }
-    // 'LUNA' :  {
-    //   "symbol": "LUNA",
-    //   "mintKey": "F6v4wfAdJB8D8p77bMXZgYt8TDKsYxLYxH5AFhUkYx9W",
-    //   "decimals": 6,
-    //   "rootKey": "AUU8Zw5ezmZJBuWtMjfTTyP6eowkpNbH5pHh6uY5BHu7",
-    //   "nodeKeys": ["BNpfdZZC8NP1PabGATRHH2ABh94U47zm1kjvneRSMSBE"],
-    //   "mangoTokenIndex" : -1
-    // }
 }
 
 export const TOKENS = {
@@ -442,8 +418,7 @@ export const TOKENS = {
         symbol: 'MNDE',
         name: 'Marinade (MNDE)',
         mintAddress: 'MNDEFzGvMt87ueuHvVU9VcTqsAP5b3fTGPsHuuPA5ey',
-        decimals: 9,
-        tags: ['orca']
+        decimals: 9
     },
     PAI: {
         symbol: 'PAI',
@@ -503,8 +478,7 @@ export const TOKENS = {
         symbol: 'LIQ',
         name: 'LIQ',
         mintAddress: '4wjPQJ6PrkC4dHhYghwJzGBVP78DkBzA2U3kHoFNBuhj',
-        decimals: 6,
-        tags: ['orca']
+        decimals: 6
     },
     ORCA: {
         symbol: 'ORCA',
@@ -522,8 +496,7 @@ export const TOKENS = {
         symbol: 'SHDW',
         name: 'Shadow Token',
         mintAddress: 'SHDWyBxihqiCj6YekG2GUr7wqKLeLAMK1gHZck9pL6y',
-        decimals: 9,
-        tags: ['orca']
+        decimals: 9
     },
     SBR: {
         symbol: 'SBR',
@@ -535,8 +508,7 @@ export const TOKENS = {
         symbol: 'SUNNY',
         name: 'SUNNY',
         mintAddress: 'SUNNYWgPQmFxe9wTZzNK7iPnJ3vYDrkgnxJRJm1s3ag',
-        decimals: 6,
-        tags: ['orca']
+        decimals: 6
     },
     DFL: {
         symbol: 'DFL',
