@@ -96,7 +96,8 @@ export class InvestinClient {
         performanceFeePercentage: Number(decodedData.performance_fee_percentage.toString()),
         minAmount: (new TokenAmount(decodedData.min_amount.toNumber(), (TOKENS as any).USDC.decimals)).toEther().toNumber(),
         minReturn: decodedData.min_return,
-        marginAccounts: decodedData.mango_positions.mango_account.toBase58()
+        marginAccounts: decodedData.mango_positions.mango_account.toBase58(),
+        isPrivate : decodedData.is_private === 1 ? true : false
       }
     }
   }

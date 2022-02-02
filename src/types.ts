@@ -40,6 +40,7 @@ export interface FUND {
     minAmount: number;
     minReturn: number;
     marginAccounts: string;
+    isPrivate: boolean;
 }
 
 export interface INVESTMENT_MODEL {
