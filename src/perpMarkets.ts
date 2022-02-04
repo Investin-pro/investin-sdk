@@ -1,4 +1,6 @@
-export const PERP_MARKETS = [
+import { PERP_MARKET } from ".";
+
+export const PERP_MARKETS: PERP_MARKET[] = [
     {
         "name": "BTC-PERP",
         "publicKey": "DtEcjPLyD4YtTBB4q8xwFZ9q49W89xZCZtJyrGebi5t8",
@@ -11,7 +13,9 @@ export const PERP_MARKETS = [
         "eventsKey": "7t5Me8RieYKsFpfLEV8jnpqcqswNpyWD95ZqgUXuLV8Z",
         "contractSize": 0.0001,
         "perpMarketId": 1,
-        "leverage": 20
+        "leverage": 20,
+        "baseLotSize": 100,
+        "quoteLotSize": 10
     },
     {
         "name": "ETH-PERP",
@@ -25,7 +29,9 @@ export const PERP_MARKETS = [
         "eventsKey": "9vDfKNPJkCvQv9bzR4JNTGciQC2RVHPVNMMHiVDgT1mw",
         "contractSize": 0.001,
         "perpMarketId": 2,
-        "leverage": 10
+        "leverage": 10,
+        "baseLotSize": 1000,
+        "quoteLotSize": 100
     },
     {
         "name": "SOL-PERP",
@@ -39,7 +45,9 @@ export const PERP_MARKETS = [
         "eventsKey": "31cKs646dt1YkA3zPyxZ7rUAkxTBz279w4XEobFXcAKP",
         "contractSize": 0.01,
         "perpMarketId": 3,
-        "leverage": 10
+        "leverage": 10,
+        "baseLotSize": 10000000,
+        "quoteLotSize": 100
     },
     {
         "name": "AVAX-PERP",
@@ -53,7 +61,9 @@ export const PERP_MARKETS = [
         "eventsKey": "5Grgo9kLu692SUcJ6S7jtbi1WkdwiyRWgThAfN1PcvbL",
         "contractSize": 0.01,
         "perpMarketId": 12,
-        "leverage": 10
+        "leverage": 10,
+        "baseLotSize": 1000000,
+        "quoteLotSize": 100
     },
     {
         "name": "LUNA-PERP",
@@ -67,6 +77,8 @@ export const PERP_MARKETS = [
         "eventsKey": "HDJ43o9Dxxu6yWRWPEce44gtCHauRGLXJwwtvD7GwEBx",
         "contractSize": 0.01,
         "perpMarketId": 13,
-        "leverage": 10
+        "leverage": 10,
+        "baseLotSize": 10000,
+        "quoteLotSize": 100
     },
 ]

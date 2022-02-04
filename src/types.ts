@@ -70,3 +70,20 @@ export interface COINGECKO_TOKEN {
         to: string;
     };
 }
+
+export interface PERP_MARKET {
+    name: string;
+    publicKey: string;
+    baseSymbol: string;
+    baseDecimals: number;
+    quoteDecimals: number;
+    marketIndex: number;
+    bidsKey: string;
+    asksKey: string;
+    eventsKey: string;
+    contractSize: number;
+    perpMarketId: number;
+    leverage: number;
+    baseLotSize: number;
+    quoteLotSize: number;
+}
