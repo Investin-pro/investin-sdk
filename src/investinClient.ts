@@ -23,6 +23,14 @@ export class InvestinClient {
     this.mangoClient = new MangoClient(connection, MANGO_PROGRAM_ID_V3)
   }
 
+  async getPlatformData() {
+    const platformDataAcc = await this.connection.getAccountInfo(platformStateAccount)
+    if (!platformDataAcc) { 
+      throw new Error("Invalid PlatformData account");
+    }
+    return PLATFORM_DATA.decode(platformDataAcc.data)
+  }
+
   private async getPerformance(tokens, prices, prevPerformance, prevTotalAmount, marginBalance) {
     let currentAum = marginBalance;
     for (const token of tokens) {
@@ -145,6 +153,25 @@ export class InvestinClient {
     let funds = (await Promise.allSettled(promises)).filter(p => p.status === 'fulfilled' && p.value !== undefined).map(f => (f as any).value);
     this.funds = funds;
     return funds;
+  }
+
+  async fetchFundByManagerAddress(managerAddress: string): Promise<FUND | undefined> {
+    // A manager can only ever have 1 fund
+    let funds = await this.connection.getProgramAccounts(programId, {
+      filters: [
+        { dataSize: FUND_DATA.span },
+        {
+          memcmp: { offset: FUND_DATA.offsetOf('manager_account'), bytes: managerAddress }
+        }
+      ]
+    });
+
+    if(funds.length > 0) {
+      const prices = await this.fetchAllTokenPrices()
+      return this.getFundData(funds[0], await this.getPlatformData(), prices)
+    } else {
+      return undefined
+    }
   }
 
   async getInvestmentsByInvestorAddress(investorAddress: PublicKey) {
