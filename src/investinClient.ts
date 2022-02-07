@@ -70,7 +70,11 @@ export class InvestinClient {
     return marginData
   }
 
-  private async getFundData(data, platformData, prices: COINGECKO_TOKEN[]): Promise<FUND | undefined> {
+  private async getFundData(data, platformData, prices?: COINGECKO_TOKEN[]): Promise<FUND | undefined> {
+    if (!prices) {
+      prices = await this.fetchAllTokenPrices()
+    }
+    
     const decodedData = FUND_DATA.decode(data.account.data);
     if (decodedData.is_initialized) {
       const { updatedPerformance, currentAum } =
@@ -122,6 +126,12 @@ export class InvestinClient {
     }
   }
 
+  async getPlatformData() {
+    const platformDataAcc = await this.connection.getAccountInfo(platformStateAccount);
+    if (!platformDataAcc) { console.error("no platformDataAcc exist"); return []; }
+    return PLATFORM_DATA.decode(platformDataAcc.data);
+  }
+
   async fetchAllFunds(prices?: COINGECKO_TOKEN[]): Promise<FUND[]> {
     if (!prices) {
       prices = await this.fetchAllTokenPrices()
@@ -133,9 +143,7 @@ export class InvestinClient {
       ]
     })
 
-    const platformDataAcc = await this.connection.getAccountInfo(platformStateAccount)
-    if (!platformDataAcc) { console.error("no platformDataAcc exist"); return []; }
-    const platformData = PLATFORM_DATA.decode(platformDataAcc.data)
+    const platformData = this.getPlatformData();
 
     const promises: any[] = []
     for (const data of allFundsData) {
@@ -147,11 +155,28 @@ export class InvestinClient {
     return funds;
   }
 
-  async getInvestmentsByInvestorAddress(investorAddress: PublicKey) {
-    if(this.funds.length === 0) {
-      await this.fetchAllFunds();
+  async findOrRetrieveFund(managerAccount: PublicKey) {
+    let fund = this.funds.find(m => m.fundManager == managerAccount.toBase58());
+    if (!fund) {
+      const fundData = await this.connection.getProgramAccounts(programId, {
+        filters: [
+          {
+            memcmp: {
+              offset: FUND_DATA.offsetOf('manager_account'),
+              bytes: managerAccount.toString()
+            }
+          }
+        ]
+      });
+      const platformData = await this.getPlatformData();
+      // WARNING: this assumes a manager account has only one fund
+      fund = await this.getFundData(fundData[0], platformData);
+      if (fund) this.funds.push(fund);
     }
+    return fund;
+  }
 
+  async getInvestmentsByInvestorAddress(investorAddress: PublicKey) {
     const investor = new Investor(this.connection, investorAddress);
     const investments = await investor.getInvestments();
 
@@ -159,12 +184,12 @@ export class InvestinClient {
     for (const invStateData of investments) {
       const amount = (new TokenAmount(invStateData.amount.toString(), 6)).toEther().toString()
       const amountInRouter = (new TokenAmount(invStateData.amount_in_router.toString(), 6)).toEther().toString()
-      const fund = this.funds.find(m => m.fundManager == invStateData.manager.toBase58());
+      let fund = await this.findOrRetrieveFund(invStateData.manager);
       let currentPerformance = 1
       if (fund?.fundPDA) {
         currentPerformance = 1 + (fund?.currentPerformance / 100)
       }
-      
+
       investmentsWithPerformances.push({
         investorStateData : invStateData,
         invStateDataPubKey: invStateData.pubKey,
