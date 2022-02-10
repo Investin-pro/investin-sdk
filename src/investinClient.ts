@@ -143,7 +143,7 @@ export class InvestinClient {
       ]
     })
 
-    const platformData = this.getPlatformData();
+    const platformData = await this.getPlatformData();
 
     const promises: any[] = []
     for (const data of allFundsData) {
