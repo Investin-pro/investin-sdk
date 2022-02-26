@@ -30,7 +30,6 @@ export interface COINGECKO_PRICE {
 export interface FUND {
     fundPDA: string;
     fundManager: string;
-    fundStateAccount: string;
     fundName: string;
     numberOfActiveInvestments: number;
     totalAmount: number;
@@ -49,7 +48,6 @@ export interface INVESTMENT_MODEL {
     hasWithdrawn: number;
     fundPDA: string;
     fundManager: string;
-    fundStateAccount: string;
     fundAddress: string;
     fundName: string;
     amount: number;
