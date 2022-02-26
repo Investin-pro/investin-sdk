@@ -89,7 +89,6 @@ export class InvestinClient {
       return {
         fundPDA: decodedData.fund_pda.toBase58(),
         fundManager: decodedData.manager_account.toBase58(),
-        fundStateAccount: data.pubkey.toBase58(),
         fundName: displayAddress(decodedData.fund_pda.toBase58()),
         numberOfActiveInvestments: decodedData.number_of_active_investments,
         totalAmount: (new TokenAmount(decodedData.total_amount, (TOKENS as any).USDC.decimals)).toEther().toNumber(),
@@ -196,7 +195,6 @@ export class InvestinClient {
         hasWithdrawn: invStateData.has_withdrawn,
         fundPDA: fund!.fundPDA,
         fundManager: invStateData.manager.toBase58(),
-        fundStateAccount: fund!.fundStateAccount,
         fundAddress: fund!.fundPDA,
         fundName: fund!.fundName,
         amount,
