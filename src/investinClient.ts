@@ -76,10 +76,12 @@ export class InvestinClient {
     }
     
     const decodedData = FUND_DATA.decode(data.account.data);
+
+    const mappedTokens = mapTokens(platformData.token_list, decodedData.tokens, TOKENS);
     if (decodedData.is_initialized) {
       const { updatedPerformance, currentAum } =
         await this.getPerformance(
-          mapTokens(platformData.token_list, decodedData.tokens, TOKENS),
+          mappedTokens,
           prices,
           decodedData.prev_performance,
           decodedData.total_amount,
@@ -100,7 +102,8 @@ export class InvestinClient {
         minAmount: (new TokenAmount(decodedData.min_amount.toNumber(), (TOKENS as any).USDC.decimals)).toEther().toNumber(),
         minReturn: decodedData.min_return,
         marginAccounts: decodedData.mango_positions.mango_account.toBase58(),
-        isPrivate : decodedData.is_private === 1 ? true : false
+        isPrivate : decodedData.is_private === 1 ? true : false,
+        tokens: mappedTokens
       }
     }
   }
@@ -164,7 +167,8 @@ export class InvestinClient {
               offset: FUND_DATA.offsetOf('manager_account'),
               bytes: managerAccount.toString()
             }
-          }
+          },
+          { dataSize: FUND_DATA.span }
         ]
       });
       const platformData = await this.getPlatformData();
@@ -202,6 +206,7 @@ export class InvestinClient {
         currentPerformance : currentPerformance,
         currentReturns: invStateData.start_performance == 0 ? amount : ((currentPerformance / (invStateData.start_performance)) * amount).toFixed(2),
         status: amountInRouter==='0' ? 'Active' : 'inActive',
+        tokens: fund!.tokens
       });
     }
     return investmentsWithPerformances;
