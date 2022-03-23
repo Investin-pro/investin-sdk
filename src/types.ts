@@ -40,6 +40,7 @@ export interface FUND {
     minReturn: number;
     marginAccounts: string;
     isPrivate: boolean;
+    tokens: Array<any>;
 }
 
 export interface INVESTMENT_MODEL {
@@ -55,6 +56,7 @@ export interface INVESTMENT_MODEL {
     currentPerformance: Number;
     currentReturns: number;
     status: 'Active' | 'inActive';
+    tokens: Array<any>;
 }
 
 export interface COINGECKO_TOKEN {
