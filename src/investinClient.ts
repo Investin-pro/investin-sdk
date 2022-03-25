@@ -77,7 +77,7 @@ export class InvestinClient {
     
     const decodedData = FUND_DATA.decode(data.account.data);
 
-    const mappedTokens = mapTokens(platformData.token_list, decodedData.tokens, TOKENS);
+    const mappedTokens = mapTokens(platformData.token_list, decodedData.tokens, TOKENS, prices);
     if (decodedData.is_initialized) {
       const { updatedPerformance, currentAum } =
         await this.getPerformance(
