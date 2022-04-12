@@ -5,6 +5,7 @@ export const NUM_TOKENS = 8
 export const MAX_TOKENS = 50
 export const NUM_MARGIN = 2
 export const MAX_INVESTORS = 10
+export const MAX_LIMIT_ORDERS= 2
 
 export const PLATFORM_DATA = struct([
   u8('is_initialized'),
@@ -161,8 +162,23 @@ export const FUND_DATA = struct([
       u64('min_amount_out'),
   ],'guard'),
   
-  seq(u8(), 24, 'margin_update_padding'),
-  seq(u8(), 2024, 'migration_additonal_padding'),
+  seq(
+    struct([
+      u64('price'),
+      u64('max_base_quantity'),
+      u64('max_quote_quantity'),
+      u64('client_order_id'),
+      u64('expiry_timestamp'),
+      u8('is_repost_processing'),
+      u8('perp_market_id'),
+      u8('side'),
+      u8('reduce_only'),
+      u8('limit'),
+      seq(u8(),3,'padding'),
+    ]),
+    MAX_LIMIT_ORDERS, 'limit_orders'
+  ),
+  seq(u8(), 1952, 'migration_additonal_padding'),
 ])
 
 export const INVESTOR_DATA = struct([
@@ -182,5 +198,6 @@ export const INVESTOR_DATA = struct([
   seq(u8(), NUM_TOKENS, 'token_indexes'),
   seq(u64(), NUM_TOKENS, 'token_debts'),
 
-  seq(u8(), 32, 'xpadding')
+  U64F64('share'),
+  seq(u8(), 16, 'xpadding')
 ]);
