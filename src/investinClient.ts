@@ -2,7 +2,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import { COINGECKO_TOKEN, FUND, FUND_DATA, INVESTMENT_MODEL, PLATFORM_DATA } from ".";
 import { MANGO_GROUP_ACCOUNT_V3, MANGO_PROGRAM_ID_V3, platformStateAccount, programId, SERUM_PROGRAM_ID_V3 } from "./constants";
 import { displayAddress, mapTokens } from "./utils/helpers";
-import { MangoClient } from '@blockworks-foundation/mango-client'
+import { MangoCache, MangoClient, MangoGroup } from '@blockworks-foundation/mango-client'
 import { TokenAmount } from "./utils/TokenAmount";
 import { Investor } from "./investor";
 import { COINGECKO_TOKENS } from "./coingeckoTokens";
@@ -47,7 +47,7 @@ export class InvestinClient {
     return { updatedPerformance, currentAum };
   }
 
-  private async fundMarginData(fund): Promise<{ balance: number }> {
+  private async fundMarginData(fund, mangoGroup: MangoGroup, mangoCache: MangoCache): Promise<{ balance: number }> {
     const marginData = {
       balance: 0
     }
@@ -56,8 +56,6 @@ export class InvestinClient {
     try {
       if (fund.mango_positions.mango_account.toBase58() !== PublicKey.default.toBase58()) {
         let marginAccount = await this.mangoClient.getMangoAccount(fund.mango_positions.mango_account, SERUM_PROGRAM_ID_V3)
-        let mangoGroup = await this.mangoClient.getMangoGroup(MANGO_GROUP_ACCOUNT_V3)
-        const mangoCache = await mangoGroup.loadCache(this.connection);
         const assets = await marginAccount.getAssetsVal(mangoGroup, mangoCache);
         const liabs = await marginAccount.getLiabsVal(mangoGroup, mangoCache)
         const value = (assets.sub(liabs));
@@ -70,7 +68,7 @@ export class InvestinClient {
     return marginData
   }
 
-  private async getFundData(data, platformData, prices?: COINGECKO_TOKEN[]): Promise<FUND | undefined> {
+  private async getFundData(data, platformData, mangoGroup: MangoGroup, mangoCache: MangoCache, prices?: COINGECKO_TOKEN[]): Promise<FUND | undefined> {
     if (!prices) {
       prices = await this.fetchAllTokenPrices()
     }
@@ -85,7 +83,7 @@ export class InvestinClient {
           prices,
           decodedData.prev_performance,
           decodedData.total_amount,
-          (await (this.fundMarginData(decodedData)) as any)?.balance ?? 0
+          (await (this.fundMarginData(decodedData, mangoGroup, mangoCache)) as any)?.balance ?? 0
         )
 
       return {
@@ -148,8 +146,10 @@ export class InvestinClient {
     const platformData = await this.getPlatformData();
 
     const promises: any[] = []
+    const mangoGroup = await this.mangoClient.getMangoGroup(MANGO_GROUP_ACCOUNT_V3)
+    const mangoCache = await mangoGroup.loadCache(this.connection);
     for (const data of allFundsData) {
-      const returnedFundDataPromise = this.getFundData(data, platformData, prices)
+      const returnedFundDataPromise = this.getFundData(data, platformData, mangoGroup, mangoCache, prices)
       if (returnedFundDataPromise) promises.push(returnedFundDataPromise);
     }
     let funds = (await Promise.allSettled(promises)).filter(p => p.status === 'fulfilled' && p.value !== undefined).map(f => (f as any).value);
@@ -172,8 +172,10 @@ export class InvestinClient {
         ]
       });
       const platformData = await this.getPlatformData();
+      const mangoGroup = await this.mangoClient.getMangoGroup(MANGO_GROUP_ACCOUNT_V3)
+      const mangoCache = await mangoGroup.loadCache(this.connection);
       // WARNING: this assumes a manager account has only one fund
-      fund = await this.getFundData(fundData[0], platformData);
+      fund = await this.getFundData(fundData[0], platformData, mangoGroup, mangoCache);
       if (fund) this.funds.push(fund);
     }
     return fund;
