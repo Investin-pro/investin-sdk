@@ -51,10 +51,10 @@ export interface INVESTMENT_MODEL {
     fundManager: string;
     fundAddress: string;
     fundName: string;
-    amount: number;
-    amountInRouter: number;
+    amount: string;
+    amountInRouter: string;
     currentPerformance: Number;
-    currentReturns: number;
+    currentReturns: string;
     status: 'Active' | 'inActive';
     tokens: Array<any>;
 }
