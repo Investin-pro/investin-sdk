@@ -79,16 +79,25 @@ export class InvestinClient {
     const friktionData = {
       balance: 0
     }
-    let friktionTotalValue = 0, totalInvestorDebt = 0;
+    let totalValueinUSD = 0, totalInvestorDebt = 0;
     try {
       if (fund.friktion_vault.volt_vault_id.toBase58() !== PublicKey.default.toBase58()) {
-        const selectedVolt = await this.friktionClient.loadVoltAndExtraDataByKey(fund.friktion_vault.volt_vault_id);
-        const friktionBalances = await selectedVolt.getBalancesForUser(fund.fund_pda)
-        friktionTotalValue = friktionBalances ? friktionBalances.totalBalance.toNumber() : 0
-
         const selectedVoltInfo = this.friktionVoltsInfo.allMainnetVolts.find(k => k.voltVaultId === fund.friktion_vault.volt_vault_id.toBase58())
         const fcTokenPrice = this.friktionVoltsInfo.pricesByCoingeckoId[selectedVoltInfo.underlyingTokenSymbol] * selectedVoltInfo.sharePricesByGlobalId[selectedVoltInfo.globalId]
-        const ulDebt = (fund.friktion_vault.ul_debt.toNumber() / 10 ** (TOKENS as any)[selectedVoltInfo.underlyingTokenSymbol.toUpperCase()].decimals);
+        
+        const selectedVolt = await this.friktionClient.loadVoltAndExtraDataByKey(fund.friktion_vault.volt_vault_id);
+        const friktionBalances = await selectedVolt.getBalancesForUser(fund.fund_pda)
+        const ulDecimals = (TOKENS as any)[selectedVoltInfo.underlyingTokenSymbol.toUpperCase()].decimals
+
+        const claimableUnderlying = friktionBalances ? friktionBalances.claimableUnderlying.toNumber() : 0
+        const mintableShares = friktionBalances ? friktionBalances.mintableShares.toNumber() : 0
+        const pendingDeposits = friktionBalances ? (friktionBalances.pendingDeposits.toNumber() / 10 ** ulDecimals) : 0
+        const pendingWithdrawals = friktionBalances ? friktionBalances.pendingWithdrawals.toNumber() : 0
+        const totalValueinUL = claimableUnderlying + mintableShares + pendingDeposits + pendingWithdrawals;
+         totalValueinUSD = totalValueinUL * fcTokenPrice; 
+
+
+        const ulDebt = (fund.friktion_vault.ul_debt.toNumber() / 10 ** ulDecimals);
         const fcDebt = (fund.friktion_vault.fc_token_debt.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals));
          totalInvestorDebt = ulDebt * this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId] + fcDebt * fcTokenPrice;
 
@@ -96,7 +105,7 @@ export class InvestinClient {
     } catch (error) {
       console.error("fundFriktionData ::: ", error);
     }
-    friktionData.balance = (friktionTotalValue - totalInvestorDebt);
+    friktionData.balance = (totalValueinUSD - totalInvestorDebt);
     return friktionData
   }
 
