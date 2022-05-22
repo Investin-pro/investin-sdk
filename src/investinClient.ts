@@ -9,6 +9,8 @@ import { COINGECKO_TOKENS } from "./coingeckoTokens";
 import { raydiumPools } from "./pools/raydiumPools";
 import { orcaPools } from "./pools/orcaPools";
 import { TOKENS } from "./tokens";
+import { FriktionSDK, VoltSDK } from "@friktion-labs/friktion-sdk";
+import fetch from "cross-fetch";
 
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
@@ -16,15 +18,19 @@ const CoinGeckoClient = new CoinGecko();
 export class InvestinClient {
   connection: Connection;
   mangoClient: MangoClient;
+  friktionClient: FriktionSDK;
+
   funds: FUND[] = [];
+  friktionVoltsInfo: any;
 
   constructor(connection: Connection) {
     this.connection = connection;
     this.mangoClient = new MangoClient(connection, MANGO_PROGRAM_ID_V3)
+    this.friktionClient = new FriktionSDK({ provider: { connection: connection } });
   }
 
-  private async getPerformance(tokens, prices, prevPerformance, prevTotalAmount, marginBalance) {
-    let currentAum = marginBalance;
+  private async getPerformance(tokens, prices, prevPerformance, prevTotalAmount, marginBalance, friktionBalance) {
+    let currentAum = marginBalance + friktionBalance;
     for (const token of tokens) {
       if (token.mint == undefined) {
         continue;
@@ -68,11 +74,37 @@ export class InvestinClient {
     return marginData
   }
 
+
+  private async fundFriktionData(fund): Promise<{ balance: number }> {
+    const friktionData = {
+      balance: 0
+    }
+    let friktionTotalValue = 0, totalInvestorDebt = 0;
+    try {
+      if (fund.friktion_vault.volt_vault_id.toBase58() !== PublicKey.default.toBase58()) {
+        const selectedVolt = await this.friktionClient.loadVoltAndExtraDataByKey(fund.friktion_vault.volt_vault_id);
+        const friktionBalances = await selectedVolt.getBalancesForUser(fund.fund_pda)
+        friktionTotalValue = friktionBalances ? friktionBalances.totalBalance.toNumber() : 0
+
+        const selectedVoltInfo = this.friktionVoltsInfo.allMainnetVolts.find(k => k.voltVaultId === fund.friktion_vault.volt_vault_id.toBase58())
+        const fcTokenPrice = this.friktionVoltsInfo.pricesByCoingeckoId[selectedVoltInfo.underlyingTokenSymbol] * selectedVoltInfo.sharePricesByGlobalId[selectedVoltInfo.globalId]
+        const ulDebt = (fund.friktion_vault.ul_debt.toNumber() / 10 ** (TOKENS as any)[selectedVoltInfo.underlyingTokenSymbol.toUpperCase()].decimals);
+        const fcDebt = (fund.friktion_vault.fc_token_debt.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals));
+         totalInvestorDebt = ulDebt * this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId] + fcDebt * fcTokenPrice;
+
+      }
+    } catch (error) {
+      console.error("fundFriktionData ::: ", error);
+    }
+    friktionData.balance = (friktionTotalValue - totalInvestorDebt);
+    return friktionData
+  }
+
   private async getFundData(data, platformData, mangoGroup: MangoGroup, mangoCache: MangoCache, prices?: COINGECKO_TOKEN[]): Promise<FUND | undefined> {
     if (!prices) {
       prices = await this.fetchAllTokenPrices()
     }
-    
+
     const decodedData = FUND_DATA.decode(data.account.data);
 
     const mappedTokens = mapTokens(platformData.token_list, decodedData.tokens, TOKENS);
@@ -83,7 +115,8 @@ export class InvestinClient {
           prices,
           decodedData.prev_performance,
           decodedData.total_amount,
-          (await (this.fundMarginData(decodedData, mangoGroup, mangoCache)) as any)?.balance ?? 0
+          (await (this.fundMarginData(decodedData, mangoGroup, mangoCache)) as any)?.balance ?? 0,
+          (await this.fundFriktionData(decodedData)) ?? 0
         )
 
       return {
@@ -100,14 +133,14 @@ export class InvestinClient {
         minAmount: (new TokenAmount(decodedData.min_amount.toNumber(), (TOKENS as any).USDC.decimals)).toEther().toNumber(),
         minReturn: decodedData.min_return,
         marginAccounts: decodedData.mango_positions.mango_account.toBase58(),
-        isPrivate : decodedData.is_private === 1 ? true : false,
+        isPrivate: decodedData.is_private === 1 ? true : false,
         tokens: mappedTokens
       }
     }
   }
 
   // redunant
-  async loadTokensAndPools() {}
+  async loadTokensAndPools() { }
 
   async fetchAllTokenPrices(): Promise<COINGECKO_TOKEN[]> {
     const raydiumCoins = raydiumPools.map(p => p.coin.symbol == "xCOPE" ? "COPE" : p.coin.symbol);
@@ -125,6 +158,10 @@ export class InvestinClient {
       return coingeckoTokens;
     }
   }
+  async fetchFriktionVolts(): Promise<{}> {
+    const res = await fetch(`https://friktion-labs.github.io/mainnet-tvl-snapshots/friktionSnapshot.json`)
+    return res.json()
+  }
 
   async getPlatformData() {
     const platformDataAcc = await this.connection.getAccountInfo(platformStateAccount);
@@ -135,6 +172,10 @@ export class InvestinClient {
   async fetchAllFunds(prices?: COINGECKO_TOKEN[]): Promise<FUND[]> {
     if (!prices) {
       prices = await this.fetchAllTokenPrices()
+    }
+
+    if (!this.friktionVoltsInfo) {
+      this.friktionVoltsInfo = await this.fetchFriktionVolts()
     }
 
     const allFundsData = await this.connection.getProgramAccounts(programId, {
@@ -196,7 +237,7 @@ export class InvestinClient {
       }
 
       investmentsWithPerformances.push({
-        investorStateData : invStateData,
+        investorStateData: invStateData,
         invStateDataPubKey: invStateData.pubKey,
         hasWithdrawn: invStateData.has_withdrawn,
         fundPDA: fund!.fundPDA,
@@ -205,9 +246,9 @@ export class InvestinClient {
         fundName: fund!.fundName,
         amount,
         amountInRouter,
-        currentPerformance : currentPerformance,
+        currentPerformance: currentPerformance,
         currentReturns: invStateData.start_performance == 0 ? amount : ((currentPerformance / (invStateData.start_performance)) * amount).toFixed(2),
-        status: amountInRouter==='0' ? 'Active' : 'inActive',
+        status: amountInRouter === '0' ? 'Active' : 'inActive',
         tokens: fund!.tokens
       });
     }
