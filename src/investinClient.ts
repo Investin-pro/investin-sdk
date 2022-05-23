@@ -79,7 +79,7 @@ export class InvestinClient {
     const friktionData = {
       balance: 0
     }
-    let totalValueinUSD = 0, totalInvestorDebt = 0;
+    let totalValueinUSD = 0, totalInvestorDebtUSD = 0;
     try {
       if (fund.friktion_vault.volt_vault_id.toBase58() !== PublicKey.default.toBase58()) {
         const selectedVoltInfo = this.friktionVoltsInfo.allMainnetVolts.find(k => k.voltVaultId === fund.friktion_vault.volt_vault_id.toBase58())
@@ -96,16 +96,14 @@ export class InvestinClient {
         const totalValueinUL = claimableUnderlying + mintableShares + pendingDeposits + pendingWithdrawals;
          totalValueinUSD = totalValueinUL * fcTokenPrice; 
 
-
         const ulDebt = (fund.friktion_vault.ul_debt.toNumber() / 10 ** ulDecimals);
         const fcDebt = (fund.friktion_vault.fc_token_debt.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals));
-         totalInvestorDebt = ulDebt * this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId] + fcDebt * fcTokenPrice;
-
+        totalInvestorDebtUSD = (ulDebt + (fcDebt * fcTokenPrice)) * this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId] ;
       }
     } catch (error) {
       console.error("fundFriktionData ::: ", error);
     }
-    friktionData.balance = (totalValueinUSD - totalInvestorDebt);
+    friktionData.balance = (totalValueinUSD - totalInvestorDebtUSD);
     return friktionData
   }
 
