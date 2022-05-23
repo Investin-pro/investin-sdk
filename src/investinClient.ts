@@ -86,7 +86,7 @@ export class InvestinClient {
     try {
       if (fund.friktion_vault.volt_vault_id.toBase58() !== PublicKey.default.toBase58()) {
         const selectedVoltInfo = this.friktionVoltsInfo.allMainnetVolts.find(k => k.voltVaultId === fund.friktion_vault.volt_vault_id.toBase58())
-        const fcTokenPrice =  selectedVoltInfo.sharePricesByGlobalId[selectedVoltInfo.globalId]
+        const fcTokenPrice =  this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId]
 
         const selectedVolt = await this.friktionClient.loadVoltAndExtraDataByKey(fund.friktion_vault.volt_vault_id);
         const friktionBalances = await selectedVolt.getBalancesForUser(fund.fund_pda)
@@ -104,7 +104,7 @@ export class InvestinClient {
         totalInvestorDebtUSD = (ulDebt + (fcDebt * fcTokenPrice)) * this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId];
       }
     } catch (error) {
-      console.error("fundFriktionData ::: ", error);
+      console.error("fundFriktionData error ::: ", error);
     }
     friktionData.balance = (totalValueinUSD - totalInvestorDebtUSD);
     console.log("friktionData:",friktionData.balance)

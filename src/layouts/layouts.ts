@@ -161,7 +161,7 @@ export const FUND_DATA = struct([
       u64('amount_in'),
       u64('min_amount_out'),
   ],'guard'),
-  
+
   seq(
     struct([
       u64('price'),
@@ -187,13 +187,13 @@ export const FUND_DATA = struct([
     u64('ul_token_balance'),
     u64('fc_token_debt'),
     u64('ul_debt'),
-
+    u8('ul_token_slot'),
     u8('is_active'),
     seq(u8('padding'), 6),
   ],'friktion_vault'),
   
   seq(u8(), 1864, 'migration_additonal_padding'),
-]);
+])
 
 export const INVESTOR_DATA = struct([
   u8('is_initialized'),
