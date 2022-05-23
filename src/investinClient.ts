@@ -89,10 +89,10 @@ export class InvestinClient {
         const friktionBalances = await selectedVolt.getBalancesForUser(fund.fund_pda)
         const ulDecimals = (TOKENS as any)[selectedVoltInfo.underlyingTokenSymbol.toUpperCase()].decimals
 
-        const claimableUnderlying = friktionBalances ? friktionBalances.claimableUnderlying.toNumber() : 0
-        const mintableShares = friktionBalances ? friktionBalances.mintableShares.toNumber() : 0
+        const claimableUnderlying = friktionBalances ? (friktionBalances.claimableUnderlying.toNumber() / 10 ** ulDecimals) : 0
+        const mintableShares = friktionBalances ? (friktionBalances.mintableShares.toNumber()/ 10 ** (selectedVoltInfo.shareTokenDecimals)) : 0
         const pendingDeposits = friktionBalances ? (friktionBalances.pendingDeposits.toNumber() / 10 ** ulDecimals) : 0
-        const pendingWithdrawals = friktionBalances ? friktionBalances.pendingWithdrawals.toNumber() : 0
+        const pendingWithdrawals = friktionBalances ? (friktionBalances.pendingWithdrawals.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals))  : 0
         const totalValueinUL = claimableUnderlying + mintableShares + pendingDeposits + pendingWithdrawals;
          totalValueinUSD = totalValueinUL * fcTokenPrice; 
 
