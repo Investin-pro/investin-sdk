@@ -102,6 +102,12 @@ export const MANGO_TOKENS = {
 }
 
 export const TOKENS = {
+    SOL: {
+        symbol: 'WSOL',
+        name: 'Wrapped Solana',
+        mintAddress: 'So11111111111111111111111111111111111111112',
+        decimals: 9
+    },
     WSOL: {
         symbol: 'WSOL',
         name: 'Wrapped Solana',
