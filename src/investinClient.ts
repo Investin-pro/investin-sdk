@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { COINGECKO_TOKEN, FUND, FUND_DATA, INVESTMENT_MODEL, PLATFORM_DATA } from ".";
 import { MANGO_GROUP_ACCOUNT_V3, MANGO_PROGRAM_ID_V3, platformStateAccount, programId, SERUM_PROGRAM_ID_V3 } from "./constants";
 import { displayAddress, mapTokens } from "./utils/helpers";
@@ -9,8 +9,9 @@ import { COINGECKO_TOKENS } from "./coingeckoTokens";
 import { raydiumPools } from "./pools/raydiumPools";
 import { orcaPools } from "./pools/orcaPools";
 import { TOKENS } from "./tokens";
-import { FriktionSDK, VoltSDK } from "@friktion-labs/friktion-sdk";
+import { FriktionSDK } from "@friktion-labs/friktion-sdk";
 import fetch from "cross-fetch";
+import { Provider, Wallet } from "@project-serum/anchor";
 
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
@@ -26,7 +27,9 @@ export class InvestinClient {
   constructor(connection: Connection) {
     this.connection = connection;
     this.mangoClient = new MangoClient(connection, MANGO_PROGRAM_ID_V3)
-    this.friktionClient = new FriktionSDK({ provider: { connection: connection } });
+    const wallet = new Wallet(Keypair.generate());
+    const provider = new Provider(connection, wallet, {});
+    this.friktionClient = new FriktionSDK({ provider: provider })
   }
 
   private async getPerformance(tokens, prices, prevPerformance, prevTotalAmount, marginBalance, friktionBalance) {
@@ -83,27 +86,28 @@ export class InvestinClient {
     try {
       if (fund.friktion_vault.volt_vault_id.toBase58() !== PublicKey.default.toBase58()) {
         const selectedVoltInfo = this.friktionVoltsInfo.allMainnetVolts.find(k => k.voltVaultId === fund.friktion_vault.volt_vault_id.toBase58())
-        const fcTokenPrice = this.friktionVoltsInfo.pricesByCoingeckoId[selectedVoltInfo.underlyingTokenSymbol] * selectedVoltInfo.sharePricesByGlobalId[selectedVoltInfo.globalId]
-        
+        const fcTokenPrice =  selectedVoltInfo.sharePricesByGlobalId[selectedVoltInfo.globalId]
+
         const selectedVolt = await this.friktionClient.loadVoltAndExtraDataByKey(fund.friktion_vault.volt_vault_id);
         const friktionBalances = await selectedVolt.getBalancesForUser(fund.fund_pda)
         const ulDecimals = (TOKENS as any)[selectedVoltInfo.underlyingTokenSymbol.toUpperCase()].decimals
 
         const claimableUnderlying = friktionBalances ? (friktionBalances.claimableUnderlying.toNumber() / 10 ** ulDecimals) : 0
-        const mintableShares = friktionBalances ? (friktionBalances.mintableShares.toNumber()/ 10 ** (selectedVoltInfo.shareTokenDecimals)) : 0
+        const mintableShares = friktionBalances ? (friktionBalances.mintableShares.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals)) : 0
         const pendingDeposits = friktionBalances ? (friktionBalances.pendingDeposits.toNumber() / 10 ** ulDecimals) : 0
-        const pendingWithdrawals = friktionBalances ? (friktionBalances.pendingWithdrawals.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals))  : 0
+        const pendingWithdrawals = friktionBalances ? (friktionBalances.pendingWithdrawals.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals)) : 0
         const totalValueinUL = claimableUnderlying + mintableShares + pendingDeposits + pendingWithdrawals;
-         totalValueinUSD = totalValueinUL * fcTokenPrice; 
+        totalValueinUSD = totalValueinUL * this.friktionVoltsInfo.pricesByCoingeckoId[selectedVoltInfo.underlyingTokenSymbol];
 
         const ulDebt = (fund.friktion_vault.ul_debt.toNumber() / 10 ** ulDecimals);
         const fcDebt = (fund.friktion_vault.fc_token_debt.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals));
-        totalInvestorDebtUSD = (ulDebt + (fcDebt * fcTokenPrice)) * this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId] ;
+        totalInvestorDebtUSD = (ulDebt + (fcDebt * fcTokenPrice)) * this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId];
       }
     } catch (error) {
       console.error("fundFriktionData ::: ", error);
     }
     friktionData.balance = (totalValueinUSD - totalInvestorDebtUSD);
+    console.log("friktionData:",friktionData.balance)
     return friktionData
   }
 

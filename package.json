@@ -25,6 +25,7 @@
   "dependencies": {
     "@blockworks-foundation/mango-client": "^3.2.22",
     "@friktion-labs/friktion-sdk": "=1.1.69",
+    "@project-serum/anchor": "^0.11.1",
     "@solana/web3.js": "^1.31.0",
     "bignumber.js": "^9.0.2",
     "bn.js": "^5.2.0",
