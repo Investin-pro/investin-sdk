@@ -214,7 +214,7 @@ export const INVESTOR_DATA = struct([
   seq(u64(), NUM_TOKENS, 'token_debts'),
 
   U64F64('share'),
-  U64F64('friktion_ul_debt'),
-  U64F64('friktion_fc_debt'),
+  u64('friktion_ul_debt'),
+  u64('friktion_fc_debt'),
 
 ]);
