@@ -161,7 +161,7 @@ export const FUND_DATA = struct([
       u64('amount_in'),
       u64('min_amount_out'),
   ],'guard'),
-  
+
   seq(
     struct([
       u64('price'),
@@ -178,14 +178,29 @@ export const FUND_DATA = struct([
     ]),
     MAX_LIMIT_ORDERS, 'limit_orders'
   ),
-  seq(u8(), 1952, 'migration_additonal_padding'),
+  
+  struct([
+    u64('last_updated'),
+    publicKeyLayout('volt_vault_id'),
+    u64('total_value_in_ul'),
+    u64('fc_token_balance'),
+    u64('ul_token_balance'),
+    u64('fc_token_debt'),
+    u64('ul_debt'),
+    u8('ul_token_slot'),
+    u8('is_active'),
+    seq(u8('padding'), 6),
+  ],'friktion_vault'),
+  
+  seq(u8(), 1864, 'migration_additonal_padding'),
 ])
 
 export const INVESTOR_DATA = struct([
   u8('is_initialized'),
   u8('has_withdrawn'),
   u8('withdrawn_from_margin'),
-  seq(u8('padding'), 5),
+  u8('withdrawn_from_friktion'),
+  seq(u8('padding'), 4),
 
   publicKeyLayout('owner'),
   u64('amount'),
@@ -199,5 +214,7 @@ export const INVESTOR_DATA = struct([
   seq(u64(), NUM_TOKENS, 'token_debts'),
 
   U64F64('share'),
-  seq(u8(), 16, 'xpadding')
+  U64F64('friktion_ul_debt'),
+  U64F64('friktion_fc_debt'),
+
 ]);

@@ -501,5 +501,15 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
             "from": "#939393",
             "to": "#494949"
         }
-    }
+    },
+    {
+        "id": "socean-staked-sol",
+        "symbol": "scnsol",
+        "name": "Socean Staked Sol",
+        "image": "https://assets.coingecko.com/coins/images/18468/small/biOTzfxE_400x400.png",
+        "strokeColor": {
+            "from": "#15e0c3",
+            "to": "#15e0c3"
+        }
+    },
 ]
