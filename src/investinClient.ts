@@ -107,7 +107,6 @@ export class InvestinClient {
       console.error("fundFriktionData error ::: ", error);
     }
     friktionData.balance = (totalValueinUSD - totalInvestorDebtUSD);
-    console.log("friktionData:",friktionData.balance)
     return friktionData
   }
 
