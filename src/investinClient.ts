@@ -1,7 +1,7 @@
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { COINGECKO_TOKEN, FUND, FUND_DATA, INVESTMENT_MODEL, PLATFORM_DATA } from ".";
 import { MANGO_GROUP_ACCOUNT_V3, MANGO_PROGRAM_ID_V3, platformStateAccount, programId, SERUM_PROGRAM_ID_V3 } from "./constants";
-import { displayAddress, mapTokens } from "./utils/helpers";
+import { displayAddress, findAssociatedTokenAddress, mapTokens } from "./utils/helpers";
 import { MangoCache, MangoClient, MangoGroup } from '@blockworks-foundation/mango-client'
 import { TokenAmount } from "./utils/TokenAmount";
 import { Investor } from "./investor";
@@ -86,22 +86,33 @@ export class InvestinClient {
     try {
       if (fund.friktion_vault.volt_vault_id.toBase58() !== PublicKey.default.toBase58()) {
         const selectedVoltInfo = this.friktionVoltsInfo.allMainnetVolts.find(k => k.voltVaultId === fund.friktion_vault.volt_vault_id.toBase58())
-        const fcTokenPrice =  this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId]
 
         const selectedVolt = await this.friktionClient.loadVoltAndExtraDataByKey(fund.friktion_vault.volt_vault_id);
         const friktionBalances = await selectedVolt.getBalancesForUser(fund.fund_pda)
         const ulDecimals = (TOKENS as any)[selectedVoltInfo.underlyingTokenSymbol.toUpperCase()].decimals
 
-        const claimableUnderlying = friktionBalances ? (friktionBalances.claimableUnderlying.toNumber() / 10 ** ulDecimals) : 0
-        const mintableShares = friktionBalances ? (friktionBalances.mintableShares.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals)) : 0
-        const pendingDeposits = friktionBalances ? (friktionBalances.pendingDeposits.toNumber() / 10 ** ulDecimals) : 0
-        const pendingWithdrawals = friktionBalances ? (friktionBalances.pendingWithdrawals.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals)) : 0
-        const totalValueinUL = claimableUnderlying + mintableShares + pendingDeposits + pendingWithdrawals;
-        totalValueinUSD = totalValueinUL * this.friktionVoltsInfo.pricesByCoingeckoId[selectedVoltInfo.underlyingTokenSymbol];
+        const fcTokenPriceinUL =  this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId]
+        let fcTokenBalance = 0;
+        try {
+          const accounts = await findAssociatedTokenAddress(fund.fund_pda, new PublicKey(selectedVoltInfo.shareTokenMint))
+          const walletBalance = await  this.connection.getTokenAccountBalance(accounts, 'processed')
+           fcTokenBalance = parseFloat(walletBalance.value.uiAmountString ?? '0');
+        } catch (error) {
+          console.error("no FC tokens:")
+        }
+       
+        const fcTokenValueInUL = fcTokenBalance * fcTokenPriceinUL;
+
+        // const claimableUnderlying = friktionBalances ? (friktionBalances.claimableUnderlying.toNumber() / 10 ** ulDecimals) : 0
+        // const mintableShares = friktionBalances ? (friktionBalances.mintableShares.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals)) : 0
+        const pendingDeposits = friktionBalances ? (friktionBalances.pendingDeposits.toNumber()) : 0
+        const pendingWithdrawals = friktionBalances ? (friktionBalances.pendingWithdrawals.toNumber()) : 0
+        const totalValueinUL = fcTokenValueInUL + pendingDeposits + pendingWithdrawals;
+        totalValueinUSD = totalValueinUL * this.friktionVoltsInfo.pricesByCoingeckoId[selectedVoltInfo.depositTokenSymbol];
 
         const ulDebt = (fund.friktion_vault.ul_debt.toNumber() / 10 ** ulDecimals);
         const fcDebt = (fund.friktion_vault.fc_token_debt.toNumber() / 10 ** (selectedVoltInfo.shareTokenDecimals));
-        totalInvestorDebtUSD = (ulDebt + (fcDebt * fcTokenPrice)) * this.friktionVoltsInfo.sharePricesByGlobalId[selectedVoltInfo.globalId];
+        totalInvestorDebtUSD = (ulDebt + (fcDebt * fcTokenPriceinUL)) * this.friktionVoltsInfo.pricesByCoingeckoId[selectedVoltInfo.depositTokenSymbol];
       }
     } catch (error) {
       console.error("fundFriktionData error ::: ", error);
@@ -119,6 +130,8 @@ export class InvestinClient {
 
     const mappedTokens = mapTokens(platformData.token_list, decodedData.tokens, TOKENS);
     if (decodedData.is_initialized) {
+
+      const friktionValue = (await this.fundFriktionData(decodedData))?.balance ?? 0
       const { updatedPerformance, currentAum } =
         await this.getPerformance(
           mappedTokens,
@@ -126,8 +139,8 @@ export class InvestinClient {
           decodedData.prev_performance,
           decodedData.total_amount,
           (await (this.fundMarginData(decodedData, mangoGroup, mangoCache)) as any)?.balance ?? 0,
-          (await this.fundFriktionData(decodedData))?.balance ?? 0
-        )
+          friktionValue
+        )       
 
       return {
         fundPDA: decodedData.fund_pda.toBase58(),
@@ -143,6 +156,8 @@ export class InvestinClient {
         minAmount: (new TokenAmount(decodedData.min_amount.toNumber(), (TOKENS as any).USDC.decimals)).toEther().toNumber(),
         minReturn: decodedData.min_return,
         marginAccounts: decodedData.mango_positions.mango_account.toBase58(),
+        friktionVault : decodedData?.friktion_vault?.volt_vault_id?.toBase58(),
+        friktionValue : friktionValue,
         isPrivate: decodedData.is_private === 1 ? true : false,
         tokens: mappedTokens
       }

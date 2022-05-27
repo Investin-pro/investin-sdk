@@ -39,6 +39,8 @@ export interface FUND {
     minAmount: number;
     minReturn: number;
     marginAccounts: string;
+    friktionVault? : string;
+    friktionValue? : number;
     isPrivate: boolean;
     tokens: Array<any>;
 }
