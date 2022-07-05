@@ -1,6 +1,6 @@
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import { COINGECKO_TOKEN, FUND, FUND_DATA, INVESTMENT_MODEL, PLATFORM_DATA } from ".";
-import { MANGO_GROUP_ACCOUNT_V3, MANGO_PROGRAM_ID_V3, platformStateAccount, programId, SERUM_PROGRAM_ID_V3 } from "./constants";
+import { COINGECKO_TOKEN, FUND, FUND_DATA, INVESTMENT_MODEL, INVESTOR_DATA, PLATFORM_DATA } from ".";
+import { Cluster, getConfig, InvestinConfig, INVESTIN_IDS} from "./constants";
 import { displayAddress, findAssociatedTokenAddress, mapTokens } from "./utils/helpers";
 import { MangoCache, MangoClient, MangoGroup } from '@blockworks-foundation/mango-client'
 import { TokenAmount } from "./utils/TokenAmount";
@@ -12,6 +12,7 @@ import { TOKENS } from "./tokens";
 import { FriktionSDK } from "@friktion-labs/friktion-sdk";
 import fetch from "cross-fetch";
 import { Provider, Wallet } from "@project-serum/anchor";
+import { INVESTMENT } from "./types";
 
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
@@ -20,16 +21,20 @@ export class InvestinClient {
   connection: Connection;
   mangoClient: MangoClient;
   friktionClient: FriktionSDK;
-
+  config: INVESTIN_IDS;
+  cluster: Cluster;
   funds: FUND[] = [];
   friktionVoltsInfo: any;
 
-  constructor(connection: Connection) {
+  constructor(connection: Connection, cluster: Cluster) {
     this.connection = connection;
-    this.mangoClient = new MangoClient(connection, MANGO_PROGRAM_ID_V3)
+    const config = getConfig(cluster);
+    this.mangoClient = new MangoClient(connection, config.MANGO_PROGRAM_ID_V3)
     const wallet = new Wallet(Keypair.generate());
     const provider = new Provider(connection, wallet, {});
     this.friktionClient = new FriktionSDK({ provider: provider })
+    this.config = config;
+    this.cluster = cluster;
   }
 
   private async getPerformance(tokens, prices, prevPerformance, prevTotalAmount, marginBalance, friktionBalance) {
@@ -64,7 +69,7 @@ export class InvestinClient {
     let balance = 0;
     try {
       if (fund.mango_positions.mango_account.toBase58() !== PublicKey.default.toBase58()) {
-        let marginAccount = await this.mangoClient.getMangoAccount(fund.mango_positions.mango_account, SERUM_PROGRAM_ID_V3)
+        let marginAccount = await this.mangoClient.getMangoAccount(fund.mango_positions.mango_account, this.config.SERUM_PROGRAM_ID_V3)
         const assets = await marginAccount.getAssetsVal(mangoGroup, mangoCache);
         const liabs = await marginAccount.getLiabsVal(mangoGroup, mangoCache)
         const value = (assets.sub(liabs));
@@ -189,7 +194,7 @@ export class InvestinClient {
   }
 
   async getPlatformData() {
-    const platformDataAcc = await this.connection.getAccountInfo(platformStateAccount);
+    const platformDataAcc = await this.connection.getAccountInfo(this.config.platformStateAccount);
     if (!platformDataAcc) { console.error("no platformDataAcc exist"); return []; }
     return PLATFORM_DATA.decode(platformDataAcc.data);
   }
@@ -203,7 +208,7 @@ export class InvestinClient {
       this.friktionVoltsInfo = await this.fetchFriktionVolts()
     }
 
-    const allFundsData = await this.connection.getProgramAccounts(programId, {
+    const allFundsData = await this.connection.getProgramAccounts(this.config.programId, {
       filters: [
         { dataSize: FUND_DATA.span }
       ]
@@ -212,7 +217,7 @@ export class InvestinClient {
     const platformData = await this.getPlatformData();
 
     const promises: any[] = []
-    const mangoGroup = await this.mangoClient.getMangoGroup(MANGO_GROUP_ACCOUNT_V3)
+    const mangoGroup = await this.mangoClient.getMangoGroup(this.config.MANGO_GROUP_ACCOUNT_V3)
     const mangoCache = await mangoGroup.loadCache(this.connection);
     for (const data of allFundsData) {
       const returnedFundDataPromise = this.getFundData(data, platformData, mangoGroup, mangoCache, prices)
@@ -226,7 +231,7 @@ export class InvestinClient {
   async findOrRetrieveFund(managerAccount: PublicKey) {
     let fund = this.funds.find(m => m.fundManager == managerAccount.toBase58());
     if (!fund) {
-      const fundData = await this.connection.getProgramAccounts(programId, {
+      const fundData = await this.connection.getProgramAccounts(this.config.programId, {
         filters: [
           {
             memcmp: {
@@ -238,7 +243,7 @@ export class InvestinClient {
         ]
       });
       const platformData = await this.getPlatformData();
-      const mangoGroup = await this.mangoClient.getMangoGroup(MANGO_GROUP_ACCOUNT_V3)
+      const mangoGroup = await this.mangoClient.getMangoGroup(this.config.MANGO_GROUP_ACCOUNT_V3)
       const mangoCache = await mangoGroup.loadCache(this.connection);
       // WARNING: this assumes a manager account has only one fund
       fund = await this.getFundData(fundData[0], platformData, mangoGroup, mangoCache);
@@ -248,7 +253,7 @@ export class InvestinClient {
   }
 
   async getInvestmentsByInvestorAddress(investorAddress: PublicKey) {
-    const investor = new Investor(this.connection, investorAddress);
+    const investor = new Investor(this.connection, this.cluster, investorAddress);
     const investments = await investor.getInvestments();
 
     let investmentsWithPerformances: INVESTMENT_MODEL[] = [];
@@ -278,5 +283,14 @@ export class InvestinClient {
       });
     }
     return investmentsWithPerformances;
+  }
+
+  async fetchAllInvestments(): Promise<INVESTMENT[]> {
+    let investments = await this.connection.getProgramAccounts(this.config.programId, {
+      filters: [
+        { dataSize: INVESTOR_DATA.span }
+      ]
+    });
+    return investments.map(investment => { return { ...INVESTOR_DATA.decode(investment.account.data), pubKey: investment.pubkey.toBase58() } })
   }
 }
