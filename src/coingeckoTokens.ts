@@ -2,6 +2,56 @@ import { COINGECKO_TOKEN } from ".";
 
 export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
     {
+        "id": "tether",
+        "symbol": "usdt",
+        "name": "Tether",
+        "image": "https://assets.coingecko.com/coins/images/325/small/Tether-logo.png?1598003707",
+        "strokeColor": {
+            "from": "#15e0c3",
+            "to": "#15e0c3"
+        }
+    },
+    {
+        "id": "binancecoin",
+        "symbol": "bnb",
+        "name": "binancecoin",
+        "image": "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png?1644979850",
+        "strokeColor": {
+            "from": "#15e0c3",
+            "to": "#15e0c3"
+        }
+    },
+    {
+        "id": "binancecoin",
+        "symbol": "BNB-PERP",
+        "name": "binancecoin",
+        "image": "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png?1644979850",
+        "strokeColor": {
+            "from": "#15e0c3",
+            "to": "#15e0c3"
+        }
+    },
+    {
+        "id": "stepn",
+        "symbol": "gmt",
+        "name": "gmt",
+        "image": "https://assets.coingecko.com/coins/images/23597/small/gmt.png?1644658792",
+        "strokeColor": {
+            "from": "#15e0c3",
+            "to": "#15e0c3"
+        }
+    },
+    {
+        "id": "stepn",
+        "symbol": "GMT-PERP",
+        "name": "gmt",
+        "image": "https://assets.coingecko.com/coins/images/23597/small/gmt.png?1644658792",
+        "strokeColor": {
+            "from": "#15e0c3",
+            "to": "#15e0c3"
+        }
+    },
+    {
         "id": "aurory",
         "symbol": "aury",
         "name": "Aurory",
@@ -14,6 +64,16 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
     {
         "id": "avalanche-2",
         "symbol": "avax",
+        "name": "avax",
+        "image": "https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png?1604021818",
+        "strokeColor": {
+            "from": "#15e0c3",
+            "to": "#15e0c3"
+        }
+    },
+    {
+        "id": "avalanche-2",
+        "symbol": "AVAX-PERP",
         "name": "avax",
         "image": "https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png?1604021818",
         "strokeColor": {
@@ -133,7 +193,16 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
             "to": "#4cadbb"
         }
     },
-
+    {
+        "id": "serum",
+        "symbol": "SRM-PERP",
+        "name": "Serum",
+        "image": "https://assets.coingecko.com/coins/images/11970/large/serum-logo.png?1597121577",
+        "strokeColor": {
+            "from": "#ddfbfb",
+            "to": "#4cadbb"
+        }
+    },
     {
         "id": "solana",
         "symbol": "wsol",
@@ -154,6 +223,24 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
             "to": "#C239F4"
         }
     },
+    {
+        "id": "solana",
+        "symbol": "SOL-PERP",
+        "name": "Solana",
+        "image": "https://assets.coingecko.com/coins/images/4128/large/coinmarketcap-solana-200.png?1616489452",
+        "strokeColor": {
+            "from": "#16E8AC",
+            "to": "#C239F4"
+        }
+    },
+    {
+        "id": "bitcoin",
+        "symbol": "BTC-PERP",
+        "name": "Bitcoin",
+        "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+        "strokeColor": "#f69419"
+    },
+
     {
         "id": "solana",
         "symbol": "sol",
@@ -195,6 +282,16 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
     {
         "id": "raydium",
         "symbol": "ray",
+        "name": "Raydium",
+        "image": "https://assets.coingecko.com/coins/images/13928/large/PSigc4ie_400x400.jpg?1612875614",
+        "strokeColor": {
+            "from": "#16E8AC",
+            "to": "#C239F4"
+        }
+    },
+    {
+        "id": "raydium",
+        "symbol": "RAY-PERP",
         "name": "Raydium",
         "image": "https://assets.coingecko.com/coins/images/13928/large/PSigc4ie_400x400.jpg?1612875614",
         "strokeColor": {
@@ -465,6 +562,16 @@ export const COINGECKO_TOKENS: COINGECKO_TOKEN[] = [
     {
         "id": "terra-luna",
         "symbol": "luna",
+        "name": "luna",
+        "image": "https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png",
+        "strokeColor": {
+            "from": "#fcd763",
+            "to": "#1a284c"
+        }
+    },
+    {
+        "id": "terra-luna",
+        "symbol": "LUNA-PERP",
         "name": "luna",
         "image": "https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png",
         "strokeColor": {

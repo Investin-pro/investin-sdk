@@ -65,20 +65,20 @@ export const PERP_MARKETS: PERP_MARKET[] = [
         "baseLotSize": 1000000,
         "quoteLotSize": 100
     },
-    {
-        "name": "LUNA-PERP",
-        "publicKey": "BCJrpvsB2BJtqiDgKVC4N6gyX1y24Jz96C6wMraYmXss",
-        "baseSymbol": "LUNA",
-        "baseDecimals": 6,
-        "quoteDecimals": 6,
-        "marketIndex": 13,
-        "bidsKey": "AiBurBkETJHHujZxNHm6UPvBQ1LLLkNkckPoZLeuLnS1",
-        "asksKey": "7Vcbxj2M8fqaNGfRDsau47uXumfCBhCTA97D6PNDPWfe",
-        "eventsKey": "HDJ43o9Dxxu6yWRWPEce44gtCHauRGLXJwwtvD7GwEBx",
-        "contractSize": 0.01,
-        "perpMarketId": 13,
-        "leverage": 10,
-        "baseLotSize": 10000,
-        "quoteLotSize": 100
-    },
+    // {
+    //     "name": "LUNA-PERP",
+    //     "publicKey": "BCJrpvsB2BJtqiDgKVC4N6gyX1y24Jz96C6wMraYmXss",
+    //     "baseSymbol": "LUNA",
+    //     "baseDecimals": 6,
+    //     "quoteDecimals": 6,
+    //     "marketIndex": 13,
+    //     "bidsKey": "AiBurBkETJHHujZxNHm6UPvBQ1LLLkNkckPoZLeuLnS1",
+    //     "asksKey": "7Vcbxj2M8fqaNGfRDsau47uXumfCBhCTA97D6PNDPWfe",
+    //     "eventsKey": "HDJ43o9Dxxu6yWRWPEce44gtCHauRGLXJwwtvD7GwEBx",
+    //     "contractSize": 0.01,
+    //     "perpMarketId": 13,
+    //     "leverage": 10,
+    //     "baseLotSize": 10000,
+    //     "quoteLotSize": 100
+    // },
 ]
