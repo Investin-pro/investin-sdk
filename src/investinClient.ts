@@ -138,7 +138,7 @@ export class InvestinClient {
           prices,
           decodedData.prev_performance,
           decodedData.total_amount,
-          (await (this.fundMarginData(decodedData, mangoGroup, mangoCache)) as any)?.balance ?? 0,
+          0,//(await (this.fundMarginData(decodedData, mangoGroup, mangoCache)) as any)?.balance ?? 0,
           friktionValue
         )       
 
